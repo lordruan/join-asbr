@@ -7,22 +7,24 @@
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
         <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+        <!-- Incluindo AngularJS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
     </head>
     <body ng-app="mainModule" ng-controller="mainController">
         <div class="container">
             <div class="row" style="margin:30px 0">
                 <div class="col-lg-3">
-                    <img src="img/logo.png" class="img-thumbnail">
+                <img src="img/produto.jpg" class="img-thumbnail">
                 </div>
                 <div class="col-lg-9">
-                    <h3>Nome do Produto</h3>
+                    <h3>Surface Phone <br> <strong>THE ULTIMATE SMARTPHONE</strong></h3>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-lg-6" id="form-container">
-
-                    <form id="step_1" class="form-step">
+                    <form id="step_1" name="form" class="css-form form-step-1" novalidate>
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <div class="panel-title">
@@ -34,36 +36,46 @@
                                     <div class="row form-group">
                                         <div class="col-lg-6">
                                             <label>Nome Completo</label>
-                                            <input class="form-control" type="text" ng-model="pessoa.nome">
+                                            <input class="form-control" type="text"  name="pNome" ng-model="pessoa.nome" ng-blur="countWords()" required  min="10" max="100">
+                                            <div ng-show="form.$submitted || form.pNome.$touched">
+                                                <div ng-show="form.pNome.$error.required">Preeencha seu nome.</div>
+                                                <div ng-show="form.pNome.$error.min || form.pNome.$error.max ">Seu nome deve ter entre 10 e 100 caracteres.</div>
+                                                <div ng-show="numberWords < 2 && numberWords != 0">Você deve adicionar nome e sobrenome.</div>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-6">
                                             <label>Data de Nascimento</label>
-                                            <input class="form-control" type="text" ng-model="pessoa.data_nascimento">
+                                            <input id="data_nascimento" class="form-control" type="date"  ng-model="pessoa.data_nascimento" required name="pDataNascimento">
+                                            <div ng-show="form.$submitted || form.pDataNascimento.$touched">
+                                                <div ng-show="form.pDataNascimento.$error.required">Preeencha sua data de nascimento.</div>
+                                                <div ng-show="form.pDataNascimento.$error.date">Preeencha com uma data valida.</div>
+                                            </div>
                                         </div>
                                     </div>
-
                                     <div class="row form-group">
                                         <div class="col-lg-6">
                                             <label>Email</label>
-                                            <input class="form-control" type="text" ng-model="pessoa.email">
+                                            <input class="form-control" type="email" ng-model="pessoa.email" required name="pEmail" >
+                                            <div ng-show="form.$submitted || form.pEmail.$touched">
+                                                <div ng-show="form.pEmail.$error.required">Preeencha seu email.</div>
+                                                <div ng-show="form.pEmail.$error.email">Utilize um email valido.</div>
+                                            </div>
                                         </div>
 
                                         <div class="col-lg-6">
-                                            <label>Telefone</label>
-                                            <input class="form-control" type="text" ng-model="pessoa.telefone">
+                                        <label>Telefone</label>
+                                        <input id="telefone" name="pTel" ng-model="pessoa.telefone" type="text" class="form-control" prequired>
                                         </div>
                                     </div>
-
                                     <div>
-                                        <button type="submit" class="btn btn-lg btn-info next-step">Próximo Passo</button>
+                                        <button class="btn btn-lg btn-info" onclick="fn_next('1')"  ng-disabled="form.$invalid || numberWords < 2 && numberWords != 0">Próximo Passo</button>
                                     </div>
                                 </fieldset>
                             </div>
                         </div>
                     </form>
-
-                    <form id="step_2" class="form-step" style="display:none">
+                    <form name="form2" id="step_2" class="form-step-2" style="display:none" novalidate>
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <div class="panel-title">
@@ -75,34 +87,33 @@
                                     <div class="row form-group">
                                         <div class="col-lg-6">
                                             <label>Região</label>
-                                            <select class="form-control" ng-model="pessoa.regiao">
-                                                <option value="">Selecione a sua região</option>
-                                                <option>Sul</option>
-                                                <option>Sudeste</option>
-                                                <option>Centro-Oeste</option>
-                                                <option>Nordeste</option>
-                                                <option>Norte</option>
+                                            <select class="form-control" ng-model="pessoa.regiao" ng-change="unidadesGen()" name="uRegiao" required>
+                                                <option value="0">Selecione a sua região</option>
+                                                <option value="1">Sul</option>
+                                                <option value="2">Sudeste</option>
+                                                <option value="3">Centro-Oeste</option>
+                                                <option value="4">Nordeste</option>
+                                                <option value="5">Norte</option>
                                             </select>
+                                            <div ng-show="form2.uRegiao.$error.required">Selecione uma região.</div>
                                         </div>
 
                                         <div class="col-lg-6">
                                             <label>Unidade</label>
-                                            <select class="form-control" ng-model="pessoa.unidade">
+                                            <select class="form-control" ng-model="pessoa.unidade" ng-options="unidade as unidade.nome for unidade in unidades track by unidade.id" required>
                                                 <option value="">Selecione a unidade mais próxima</option>
-                                                <option>???</option>
                                             </select>
                                         </div>
                                     </div>
-
                                     <div>
-                                        <button type="submit" class="btn btn-lg btn-info next-step">Enviar</button>
+                                        <button class="btn btn-lg btn-info" onclick="fn_next('2')"  ng-click="salvar()" ng-disabled="form2.$invalid">Enviar</button>
                                     </div>
                                 </fieldset>
                             </div>
                         </div>
                     </form>
 
-                    <div id="step_sucesso" class="form-step" style="display:none">
+                    <div id="step_sucesso" class="form-step-3" style="display:none">
                         <div class="panel panel-info">
                             <div class="panel-heading">
                                 <div class="panel-title">
@@ -116,22 +127,23 @@
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <h1>Chamada interessante para o produto</h1>
-                    <h2>Mais uma informação relevante</h2>
+                    <h1>Seja uns dos primeiros a poder comprar o novo Surface Phone</h1>
+                    <h2>A Microsoft está se movimentando para o lançamento do Surface Phone, que é conhecido por ser o seu próximo top de linha e este pode ser sua unica chance de receber em primeira mão todas as novidades. <br> Além de acesso a <strong>Pré Venda Antecipada</strong>. <br> THE ULTIMATE SMARTPHONE.</h2>
                 </div>
             </div>
         </div>
-
-        <!-- Incluindo AngularJS -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
         <script src="js/app.js"></script>
         <script>
-            $(function () {
-                $('.next-step').click(function (event) {
-                    event.preventDefault();
-                    $(this).parents('.form-step').hide().next().show();
-                });
-            });
+            var fn_next = function (id) {
+                    $('.form-step-'+id).hide();
+                    id++;
+                    $('.form-step-'+id).show();
+            },
+            fn_salvar = function () {
+
+            };
+            $('#telefone').mask('(00) 0000-00009');
+
         </script>
     </body>
 </html>
